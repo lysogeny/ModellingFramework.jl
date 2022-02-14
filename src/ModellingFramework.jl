@@ -5,7 +5,7 @@ import LatinHypercubeSampling
 import DifferentialEquations
 import Optim
 import Distances
-import Plots
+import RecipesBase
 
 include("model_data.jl")
 include("model.jl")
@@ -13,6 +13,7 @@ include("ode_model.jl")
 include("model_objective.jl")
 include("model_fit.jl")
 include("helpers.jl")
+include("plots.jl")
 
 # Types
 export ModelData,

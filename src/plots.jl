@@ -1,4 +1,4 @@
-Plots.@recipe function f(md::ModelData)
+RecipesBase.@recipe function f(md::ModelData)
     panels = fields(md) |> unique
     d = DataFrames.DataFrame(md)
     pans = [(label=i, blank=false) for i in 1:length(panels)]
@@ -9,7 +9,7 @@ Plots.@recipe function f(md::ModelData)
     for panel in panels
         x = d[d.fields .== panel, "time"]
         y = d[d.fields .== panel, "value"]
-        @series begin
+        RecipesBase.@series begin
             subplot := panel
             label --> ""
             seriestype := :scatter
@@ -18,18 +18,18 @@ Plots.@recipe function f(md::ModelData)
     end
 end
 
-Plots.@recipe function f(mf::ModelFit)
+RecipesBase.@recipe function f(mf::ModelFit)
     fun = mf.obj
     data = DataFrames.DataFrame(fun.d)
     ls = link_styles(mf.obj.m)
     optim = mf.best
     sim = simulate(mf)
     times = LinRange(fun.m.tspan..., 100) |> collect
-    @series begin
+    RecipesBase.@series begin
         mf.obj.d
     end
     for i in 1:size(sim, 2)
-        @series begin
+        RecipesBase.@series begin
             datavalues = data[data.fields .== i, "value"]
             lims = (minimum(datavalues), maximum(datavalues))
             yscale --> ls[i]

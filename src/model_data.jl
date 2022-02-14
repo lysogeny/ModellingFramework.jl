@@ -54,10 +54,10 @@ vals(x::ModelData) = x.x
 Create a dataframe from a dataset
 """
 function DataFrames.DataFrame(x::AbstractData) 
-    DataFrame(:value => vals(x),
-              :time => times(x),
-              :fields => fields(x),
-              :weight => weights(x))
+    DataFrames.DataFrame(:value => vals(x),
+                         :time => times(x),
+                         :fields => fields(x),
+                         :weight => weights(x))
 end
 
 # Most important constructor.
