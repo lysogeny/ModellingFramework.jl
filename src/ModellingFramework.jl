@@ -22,6 +22,7 @@ export ModelData,
     parameter_array,
     parameter_dict,
     parameter_index,
+    link_styles,
     # Model methods
     initial,
     ratefun,

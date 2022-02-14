@@ -151,3 +151,9 @@ bounds(t::AbstractModel, parameter::Integer) = bounds(t)[parameter]
 bounds(t::AbstractModel, parameter::Symbol) = bounds(t)[parameter_index(t, parameter)]
 lower_bound(t::AbstractModel) = map(param -> bounds(t, param)[1], free_parameters(t))
 upper_bound(t::AbstractModel) = map(param -> bounds(t, param)[2], free_parameters(t))
+
+"""link_styles(t::AbstractModel)::Vector{Symbol}
+
+Returns `styles` for  the model links, primarily used for axis choice in plotting
+"""
+link_styles(t::AbstractModel) = error("link_styles was not implemented for $(typeof(t))")
