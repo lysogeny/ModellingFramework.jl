@@ -12,6 +12,7 @@ include("model.jl")
 include("ode_model.jl")
 include("model_objective.jl")
 include("model_fit.jl")
+include("helpers.jl")
 
 # Types
 export ModelData,
