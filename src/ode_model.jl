@@ -40,7 +40,7 @@ function simulate(t::ODEModel, x::AbstractVector)
     u₀ = initial(t, x)
     rates! = ratefun(t)
     problem = DifferentialEquations.ODEProblem(rates!, u₀, t.tspan, x)
-    solution = solve(problem)#, alg_hints=[:stiff])
+    solution = DifferentialEquations.solve(problem)#, alg_hints=[:stiff])
     #times = LinRange(t.tspan[1], t.tspan[2], steps)
     times -> collect(hcat(DifferentialEquations.solution(times).u...)')
 end
