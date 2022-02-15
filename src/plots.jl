@@ -22,7 +22,6 @@ RecipesBase.@recipe function f(mf::ModelFit)
     fun = mf.obj
     data = DataFrames.DataFrame(fun.d)
     ls = link_styles(mf.obj.m)
-    optim = mf.best
     sim = simulate(mf)
     times = LinRange(fun.m.tspan..., 100) |> collect
     RecipesBase.@series begin
@@ -30,11 +29,17 @@ RecipesBase.@recipe function f(mf::ModelFit)
     end
     for i in 1:size(sim, 2)
         RecipesBase.@series begin
-            datavalues = data[data.fields .== i, "value"]
-            lims = (minimum(datavalues), maximum(datavalues))
             yscale --> ls[i]
-            limdiff = lims[2] - lims[1]
-            #ylimits --> (lims[1] - 0.1*limdiff, lims[2] + 0.1*limdiff)
+            datavalues = data[data.fields .== i, "value"]
+            if ls[i] == :log10
+                lims = log10.((minimum(datavalues), maximum(datavalues)))
+                limdiff = lims[2] - lims[1]
+                ylimits --> 10 .^ (lims[1] - 0.1*limdiff, lims[2] + 0.1*limdiff)
+            else
+                lims = (minimum(datavalues), maximum(datavalues))
+                limdiff = lims[2] - lims[1]
+                ylimits --> (lims[1] - 0.1*limdiff, lims[2] + 0.1*limdiff)
+            end
             ylabel --> link_names(mf.obj.m)[i]
             label --> ""
             width --> 2
