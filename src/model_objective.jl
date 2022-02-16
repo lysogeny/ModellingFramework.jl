@@ -11,6 +11,7 @@ end
 child(m::ModelObjective) = m.d
 model(m::ModelObjective) = m.m
 
+# TODO: change this to not link to output and introduce simulate_link method that does this instead
 function simulate(m::ModelObjective, x::AbstractArray)
     simulate(model(m), x, times(m)) |> link(model(m))
 end
@@ -35,20 +36,19 @@ function starts(mo::ModelObjective; n=10, ε=1e-20, iters=200)
     LatinHypercubeSampling.scaleLHC(param_values, [(b[1]+ε, b[2]-ε) for b in param_bounds])
 end
 
-function Optim.optimize(mo::ModelObjective, s::Vector)
+function optimise(mo::ModelObjective, s::Vector; optimiser=Optim.NelderMead(), optimiser_options=Optim.Options(f_abstol=1e-2, time_limit=120))
     mod = model(mo)
     o = Optim.optimize(x -> mo(x), lower_bound(mod), upper_bound(mod), s,
-                       Optim.Fminbox(Optim.NelderMead()), 
-                       Optim.Options(f_abstol=1e-2, time_limit=120))
+                       Optim.Fminbox(optimiser), optimiser_options)
     o
 end
 
-function Optim.optimize(mo::ModelObjective, s::Matrix)
+function optimise(mo::ModelObjective, s::Matrix; optimiser=Optim.NelderMead(), optimiser_options=Optim.Options(f_abstol=1e-2, time_limit=120))
     map(eachrow(s)) do start
-        Optim.optimize(mo, collect(start))
+        optimise(mo, collect(start); optimiser=optimiser, optimiser_options=optimiser_options)
     end
 end
 
-function Optim.optimize(mo::ModelObjective; n=10, ε=1e-10)
-    Optim.optimize(mo, starts(mo; n=n, ε=ε))
+function optimise(mo::ModelObjective; n=10, ε=1e-10, optimiser=Optim.NelderMead(), optimiser_options=Optim.Options(f_abstol=1e-2, time_limit=120))
+    optimise(mo, starts(mo; n=n, ε=ε); optimiser=optimiser, optimiser_options=optimiser_options)
 end

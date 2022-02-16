@@ -7,8 +7,8 @@ end
 child(m::ModelFit) = m.obj
 model(m::ModelFit) = model(m.obj)
 
-function ModelFit(mo::ModelObjective; n=10, ε=1e-10)
-    opts = Optim.optimize(mo, n=n, ε=ε)
+function ModelFit(mo::ModelObjective; n=10, ε=1e-10, optimiser=Optim.NelderMead(), optimiser_options=Optim.Options(f_abstol=1e-2, time_limit=120))
+    opts = optimise(mo, n=n, ε=ε, optimiser=optimiser, optimiser_options=optimiser_options)
     best = opts[minimum(minimum.(opts)) .== minimum.(opts)][1].minimizer
     ModelFit(mo, opts, best)
 end
