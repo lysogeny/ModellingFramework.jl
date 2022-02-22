@@ -6,6 +6,7 @@ import DifferentialEquations
 import Optim
 import Distances
 import RecipesBase
+import Distributions
 
 include("model_data.jl")
 include("model.jl")

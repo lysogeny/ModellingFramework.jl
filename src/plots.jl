@@ -22,11 +22,25 @@ RecipesBase.@recipe function f(mf::ModelFit)
     fun = mf.obj
     data = DataFrames.DataFrame(fun.d)
     ls = link_styles(mf.obj.m)
-    sim = simulate(mf)
+    optims = [x.minimizer for x in mf.fits]
+    logrss = log10.(minimum.(mf.fits))
+    logrss_dist = Distributions.Normal(Statistics.mean(logrss, Statistics.std(logrss)))
     times = LinRange(fun.m.tspan..., 100) |> collect
+    for optim in optims
+        sim = simulate(model(mf), optim)(times) |> link(model(mf))
+        for i in 1:size(sim, 2)
+            RecipesBase.@series begin
+                linecolor --> "gray"
+                label --> ""
+                alpha --> 1 - Distributions.cdf(logrss_dist, logrss[o])
+                (times, sim[:,i])
+            end
+        end
+    end
     RecipesBase.@series begin
         mf.obj.d
     end
+    sim = simulate(mf)
     for i in 1:size(sim, 2)
         RecipesBase.@series begin
             yscale --> ls[i]
